@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  postgres:
+    image: guoqiangqi/postgresql-vector-search:v17
+    container_name: postgresql_with_extensions
+    environment:
+      POSTGRES_USER: nju_common
+      POSTGRES_PASSWORD: opensource
+      POSTGRES_DB: compass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nju_common -d compass"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      #command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /data/postgresql-data
+      o: bind
