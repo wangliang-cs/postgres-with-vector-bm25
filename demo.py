@@ -63,8 +63,8 @@ def insert_sample_data():
     # 样例文档数据
     sample_documents = [
         {
-            "title": "人工智能概述",
-            "content": "人工智能是研究、开发用于模拟、延伸和扩展人的智能的理论、方法、技术及应用系统的一门新的技术科学。",
+            "title": "人工智能概述 Artificial Intelligence",
+            "content": "Artificial Intelligence 人工智能 是研究、开发用于模拟、延伸和扩展人的智能的理论、方法、技术及应用系统的一门新的技术科学。",
             "metadata": {"category": "technology", "author": "张三"}
         },
         {
@@ -115,7 +115,7 @@ def insert_sample_data():
     conn.close()
     print(f"插入了 {len(sample_documents)} 条样例数据")
 
-def hybrid_search(query_text, query_vector=None, vector_weight=0.7, text_weight=0.3, top_k=5):
+def hybrid_search(query_text, query_vector=None, vector_weight=0.0, text_weight=1.0, top_k=5):
     """
     执行混合检索 (向量 + BM25)
 
@@ -140,14 +140,14 @@ def hybrid_search(query_text, query_vector=None, vector_weight=0.7, text_weight=
         title,
         content,
         metadata,
-        %s * (1 - (embedding <=> %s)) AS vector_score,
-        %s * ts_rank(to_tsvector('english', content), plainto_tsquery('english', %s)) AS text_score,
+        (1 - (embedding <=> %s)) AS vector_score,
+        ts_rank(to_tsvector('english', content), plainto_tsquery('english', %s)) AS text_score,
         %s * (1 - (embedding <=> %s)) + %s * ts_rank(to_tsvector('english', content), plainto_tsquery('english', %s)) AS combined_score
     FROM documents
     ORDER BY combined_score DESC
     LIMIT %s;
-    """, (vector_weight, query_vector,
-          text_weight, query_text,
+    """, (query_vector,
+          query_text,
           vector_weight, query_vector,
           text_weight, query_text,
           top_k))
@@ -175,6 +175,7 @@ if __name__ == "__main__":
 
     # 执行混合检索示例
     query_text = "人工智能"
+    # query_text = "Artificial Intelligence"
 
     # 为示例生成一个固定的查询向量 (实际应用中应使用模型生成)
     np.random.seed(42)  # 为了示例可重复性
@@ -184,6 +185,6 @@ if __name__ == "__main__":
     hybrid_search(query_text, example_query_vector)
 
     # 尝试不同的权重组合
-    print("\n尝试不同的权重组合:")
-    hybrid_search(query_text, example_query_vector, vector_weight=0.9, text_weight=0.1)
-    hybrid_search(query_text, example_query_vector, vector_weight=0.1, text_weight=0.9)
+    # print("\n尝试不同的权重组合:")
+    # hybrid_search(query_text, example_query_vector, vector_weight=0.9, text_weight=0.1)
+    # hybrid_search(query_text, example_query_vector, vector_weight=0.1, text_weight=0.9)

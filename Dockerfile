@@ -16,6 +16,8 @@ ENV PG_VERSION_MAJOR=${PG_VERSION_MAJOR} \
     PATH="/usr/local/bin:/root/.cargo/bin:$PATH" \
     PGX_HOME=/usr/lib/postgresql/${PG_VERSION_MAJOR}
 
+RUN echo "Hello, 0"
+
 # Install build dependencies in a single layer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -90,7 +92,7 @@ COPY --from=builder-pg_search /tmp/paradedb/target/release/pg_search-pg${PG_VERS
 
 # Initialize database with extensions
 RUN sed -i "s#^module_pathname = .*#module_pathname = '\$libdir/plugins/pg_search'#" /usr/share/postgresql/${PG_VERSION_MAJOR}/extension/pg_search.control && \
-    sed -i "s/^#shared_preload_libraries = ''/shared_preload_libraries = 'pg_search'/" /usr/share/postgresql/postgresql.conf.sample
+    sed -i "s|^#shared_preload_libraries = ''|shared_preload_libraries = '\$libdir/plugins/pg_search'|" /usr/share/postgresql/postgresql.conf.sample
 
 # Set up entrypoint to create extensions
 COPY docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
