@@ -174,28 +174,46 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
     cursor = conn.cursor()
 
     # 执行混合查询，不再需要显式类型转换
+    # cursor.execute(f"""
+    # SELECT
+    #     package_id,
+    #     summary,
+    #     augmented_keywords,
+    #     %s * (1 - (summary_embedding <=> %s))
+    #     + %s * (1 - (keywords_embedding <=> %s))
+    #     + %s * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s))
+    #     + %s * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s))  AS combined_score,
+    #     (1 - (summary_embedding <=> %s)) AS summary_embedding_score,
+    #     (1 - (keywords_embedding <=> %s)) AS keywords_embedding_score,
+    #     ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s)) as summary_text_score,
+    #     ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s)) as keywords_text_score
+    # FROM {table_name}
+    # ORDER BY combined_score DESC
+    # LIMIT %s;
+    # """, (weight_summary_vector, query_summary_vector,
+    #       weight_keywords_vector, query_keywords_vector,
+    #       weight_summary_text, query_summary_text,
+    #       weight_keywords_text, query_keywords_text,
+    #       query_summary_vector, query_keywords_vector, query_summary_text, query_keywords_text,
+    #       top_k))
+
     cursor.execute(f"""
-    SELECT
-        package_id,
-        summary,
-        augmented_keywords,
-        %s * (1 - (summary_embedding <=> %s)) 
-        + %s * (1 - (keywords_embedding <=> %s)) 
-        + %s * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s))  
-        + %s * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s))  AS combined_score,
-        (1 - (summary_embedding <=> %s)) AS summary_embedding_score,
-        (1 - (keywords_embedding <=> %s)) AS keywords_embedding_score,
-        ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s)) as summary_text_score,
-        ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s)) as keywords_text_score
-    FROM {table_name}
-    ORDER BY combined_score DESC
-    LIMIT %s;
-    """, (weight_summary_vector, query_summary_vector,
-          weight_keywords_vector, query_keywords_vector,
-          weight_summary_text, query_summary_text,
-          weight_keywords_text, query_keywords_text,
-          query_summary_vector, query_keywords_vector, query_summary_text, query_keywords_text,
-          top_k))
+        SELECT
+            package_id,
+            summary,
+            augmented_keywords,
+            {weight_summary_vector} * (1 - (summary_embedding <=> {query_summary_vector})) 
+            + {weight_keywords_vector} * (1 - (keywords_embedding <=> {query_keywords_vector})) 
+            + {weight_summary_text} * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', {query_summary_text}))  
+            + {weight_keywords_text} * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', {query_keywords_text}))  AS combined_score,
+            (1 - (summary_embedding <=> {query_summary_vector})) AS summary_embedding_score,
+            (1 - (keywords_embedding <=> {query_keywords_vector})) AS keywords_embedding_score,
+            ts_rank(to_tsvector('english', summary), plainto_tsquery('english', {query_summary_text})) as summary_text_score,
+            ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', {query_keywords_text})) as keywords_text_score
+        FROM {table_name}
+        ORDER BY combined_score DESC
+        LIMIT {top_k};
+        """)
 
     results = cursor.fetchall()
 
