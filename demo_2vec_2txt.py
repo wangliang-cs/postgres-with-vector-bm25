@@ -44,11 +44,11 @@ def setup_database(table_name="summary_aug_keywords"):
     """)
 
     cursor.execute(f"""
-    CREATE UNIQUE INDEX CONCURRENTLY idx_package_id ON {table_name} (package_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_package_id ON {table_name} (package_id);
     """)
 
     cursor.execute(f"""
-    CREATE INDEX CONCURRENTLY idx_ecosystem ON {table_name} (ecosystem);
+    CREATE INDEX IF NOT EXISTS idx_ecosystem ON {table_name} (ecosystem);
     """)
 
     # 创建全文搜索索引
