@@ -216,7 +216,7 @@ if __name__ == "__main__":
     weight_summary_vector = 0.25
     query_summary_vector = np.repeat(0.3, 768).astype(np.float32).tolist()
     weight_keywords_vector = 0.25
-    query_keywords_vector = np.repeat(0.3, 768).astype(np.float32).tolist()
+    query_keywords_vector = np.repeat(0.35, 768).astype(np.float32).tolist()
     weight_summary_text = 0.25
     query_summary_text = "flatten nested arrays into a single, non-nested list of element"
     weight_keywords_text = 0.25
