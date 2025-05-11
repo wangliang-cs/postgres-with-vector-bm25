@@ -6,7 +6,7 @@ from psycopg2 import extensions
 # 数据库连接配置
 DB_CONFIG = {
     "host": "localhost",
-    "database": "compass_2vec_2txt",
+    "database": "compass",
     "user": "nju_common",
     "password": "opensource"
 }
