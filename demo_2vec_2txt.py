@@ -41,7 +41,13 @@ def setup_database(table_name="summary_aug_keywords"):
         summary_embedding VECTOR(768),  -- 使用384维向量
         keywords_embedding VECTOR(768)  -- 使用384维向量
     );
+    """)
+
+    cursor.execute(f"""
     CREATE UNIQUE INDEX CONCURRENTLY idx_package_id ON {table_name} (package_id);
+    """)
+
+    cursor.execute(f"""
     CREATE INDEX CONCURRENTLY idx_ecosystem ON {table_name} (ecosystem);
     """)
 
