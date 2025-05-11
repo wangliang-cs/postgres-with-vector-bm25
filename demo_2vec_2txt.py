@@ -202,14 +202,14 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
             package_id,
             summary,
             augmented_keywords,
-            {weight_summary_vector} * (1 - (summary_embedding <=> {query_summary_vector})) 
-            + {weight_keywords_vector} * (1 - (keywords_embedding <=> {query_keywords_vector})) 
-            + {weight_summary_text} * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', {query_summary_text}))  
-            + {weight_keywords_text} * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', {query_keywords_text}))  AS combined_score,
-            (1 - (summary_embedding <=> {query_summary_vector})) AS summary_embedding_score,
-            (1 - (keywords_embedding <=> {query_keywords_vector})) AS keywords_embedding_score,
-            ts_rank(to_tsvector('english', summary), plainto_tsquery('english', {query_summary_text})) as summary_text_score,
-            ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', {query_keywords_text})) as keywords_text_score
+            {weight_summary_vector} * (1 - (summary_embedding <=> '{query_summary_vector}')) 
+            + {weight_keywords_vector} * (1 - (keywords_embedding <=> '{query_keywords_vector}')) 
+            + {weight_summary_text} * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', '{query_summary_text}'))  
+            + {weight_keywords_text} * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', '{query_keywords_text}'))  AS combined_score,
+            (1 - (summary_embedding <=> '{query_summary_vector}')) AS summary_embedding_score,
+            (1 - (keywords_embedding <=> '{query_keywords_vector}')) AS keywords_embedding_score,
+            ts_rank(to_tsvector('english', summary), plainto_tsquery('english', '{query_summary_text}')) as summary_text_score,
+            ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', '{query_keywords_text}')) as keywords_text_score
         FROM {table_name}
         ORDER BY combined_score DESC
         LIMIT {top_k};
