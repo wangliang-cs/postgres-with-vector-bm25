@@ -186,7 +186,7 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
         (1 - (summary_embedding <=> %s)) AS summary_embedding_score,
         (1 - (keywords_embedding <=> %s)) AS keywords_embedding_score,
         ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s)) as summary_text_score,
-        ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s)) as keywords_text_score,
+        ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s)) as keywords_text_score
     FROM {table_name}
     ORDER BY combined_score DESC
     LIMIT %s;
