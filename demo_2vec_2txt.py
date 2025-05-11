@@ -30,7 +30,7 @@ def setup_database(table_name="summary_aug_keywords"):
 
     with conn.cursor() as cursor:
         # 执行删除表操作（如果表存在）
-        cursor.execute("DROP TABLE IF EXISTS your_table_name")
+        cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
         conn.commit()  # 提交事务
         print("表已成功删除（如果存在）")
 
