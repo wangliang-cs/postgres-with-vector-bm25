@@ -147,7 +147,10 @@ def insert_sample_data(table_name="summary_aug_keywords"):
         ]
     )
 
-    conn.commit()
+    try:
+        conn.commit()
+    except psycopg2.errors.UniqueViolation:
+        print("psycopg2.errors.UniqueViolation")
     cursor.close()
     conn.close()
     print(f"插入了 {len(sample_documents)} 条样例数据")
