@@ -133,24 +133,24 @@ def insert_sample_data(table_name="summary_aug_keywords"):
             "keywords_embedding": np.repeat(0.5, 768).astype(np.float32).tolist()
         },
     ]
-    # 插入数据
-    execute_values(
-        cursor,
-        f"""
-        INSERT INTO {table_name} (package_id, package_name, ecosystem, summary, augmented_keywords, summary_embedding, keywords_embedding)
-        VALUES %s
-        """,
-        [
-            (doc["package_id"], doc["package_name"], doc["ecosystem"], doc["summary"], doc["augmented_keywords"],
-             doc["summary_embedding"], doc["keywords_embedding"])
-            for doc in sample_documents
-        ]
-    )
-
     try:
-        conn.commit()
+        # 插入数据
+        execute_values(
+            cursor,
+            f"""
+            INSERT INTO {table_name} (package_id, package_name, ecosystem, summary, augmented_keywords, summary_embedding, keywords_embedding)
+            VALUES %s
+            """,
+            [
+                (doc["package_id"], doc["package_name"], doc["ecosystem"], doc["summary"], doc["augmented_keywords"],
+                 doc["summary_embedding"], doc["keywords_embedding"])
+                for doc in sample_documents
+            ]
+        )
     except psycopg2.errors.UniqueViolation:
         print("psycopg2.errors.UniqueViolation")
+
+    conn.commit()
     cursor.close()
     conn.close()
     print(f"插入了 {len(sample_documents)} 条样例数据")
