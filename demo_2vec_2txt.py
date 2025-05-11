@@ -178,7 +178,7 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
         augmented_keywords,
         %s * (1 - (summary_embedding <=> %s)) 
         + %s * (1 - (keywords_embedding <=> %s)) 
-        + %s * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s)  
+        + %s * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s))  
         + %s * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s))  AS combined_score
     FROM documents
     ORDER BY combined_score DESC
