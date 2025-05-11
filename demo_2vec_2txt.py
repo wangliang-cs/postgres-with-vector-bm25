@@ -182,7 +182,11 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
         %s * (1 - (summary_embedding <=> %s)) 
         + %s * (1 - (keywords_embedding <=> %s)) 
         + %s * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s))  
-        + %s * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s))  AS combined_score
+        + %s * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s))  AS combined_score,
+        (1 - (summary_embedding <=> %s)) AS summary_embedding_score,
+        (1 - (keywords_embedding <=> %s)) AS keywords_embedding_score,
+        ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s)) as summary_text_score,
+        ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s)) as keywords_text_score,
     FROM {table_name}
     ORDER BY combined_score DESC
     LIMIT %s;
@@ -190,6 +194,7 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
           weight_keywords_vector, query_keywords_vector,
           weight_summary_text, query_summary_text,
           weight_keywords_text, query_keywords_text,
+          query_summary_vector, query_keywords_vector, query_summary_text, query_keywords_text,
           top_k))
 
     results = cursor.fetchall()
@@ -201,6 +206,10 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
         print(f"Package ID: {row[0]}")
         print(f"Summary: {row[1]}")
         print(f"Augmented Keywords: {row[2][:100]}...")  # 只显示前100个字符
+        print(f"Summary Embedding 得分: {row[4]:.4f}")
+        print(f"Keywords Embedding 得分: {row[5]:.4f}")
+        print(f"Summary Text 得分: {row[6]:.4f}")
+        print(f"Keywords Text 得分: {row[7]:.4f}")
         print(f"综合得分: {row[3]:.4f}")
 
     cursor.close()
