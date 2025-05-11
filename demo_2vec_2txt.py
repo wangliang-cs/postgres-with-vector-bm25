@@ -159,7 +159,7 @@ def insert_sample_data(table_name="summary_aug_keywords"):
 def hybrid_search(weight_summary_vector, query_summary_vector,
                   weight_keywords_vector, query_keywords_vector,
                   weight_summary_text, query_summary_text,
-                  weight_keywords_text, query_keywords_text, top_k=5):
+                  weight_keywords_text, query_keywords_text, top_k=5, table_name="summary_aug_keywords"):
     """
     执行混合检索 (向量 + BM25)
 
@@ -183,14 +183,14 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
         + %s * (1 - (keywords_embedding <=> %s)) 
         + %s * ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s))  
         + %s * ts_rank(to_tsvector('english', augmented_keywords), plainto_tsquery('english', %s))  AS combined_score
-    FROM documents
+    FROM %s
     ORDER BY combined_score DESC
     LIMIT %s;
     """, (weight_summary_vector, query_summary_vector,
           weight_keywords_vector, query_keywords_vector,
           weight_summary_text, query_summary_text,
           weight_keywords_text, query_keywords_text,
-          top_k))
+          table_name, top_k))
 
     results = cursor.fetchall()
 
