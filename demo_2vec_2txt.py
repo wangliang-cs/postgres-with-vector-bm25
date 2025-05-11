@@ -39,7 +39,7 @@ def setup_database(table_name="summary_aug_keywords"):
         summary TEXT,
         augmented_keywords TEXT,
         summary_embedding VECTOR(768),  -- 使用384维向量
-        keywords_embedding VECTOR(768),  -- 使用384维向量
+        keywords_embedding VECTOR(768)  -- 使用384维向量
     );
     CREATE UNIQUE INDEX CONCURRENTLY idx_package_id ON {table_name} (package_id);
     CREATE INDEX CONCURRENTLY idx_ecosystem ON {table_name} (ecosystem);
