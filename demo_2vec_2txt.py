@@ -207,6 +207,8 @@ def hybrid_search(weight_summary_vector, query_summary_vector,
     #       query_summary_vector, query_keywords_vector, query_summary_text, query_keywords_text,
     #       top_k))
 
+
+    # 各分项得分最高为1分
     cursor.execute(f"""
         SELECT
             package_id,
