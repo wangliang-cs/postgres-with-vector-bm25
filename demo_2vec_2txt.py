@@ -259,9 +259,11 @@ if __name__ == "__main__":
     weight_keywords_vector = 0.25
     query_keywords_vector = sample_documents[2]["keywords_embedding"]
     weight_summary_text = 0.25
-    query_summary_text = "flatten nested arrays into a single, non-nested list of element"
+    # query_summary_text = "flatten nested arrays into a single, non-nested list of element"
+    query_summary_text = sample_documents[2]["summary"]
     weight_keywords_text = 0.25
-    query_keywords_text = "array flatten"
+    # query_keywords_text = "array flatten"
+    query_keywords_text = sample_documents[2]["augmented_keywords"]
 
     # 执行查询
     hybrid_search(weight_summary_vector, query_summary_vector,
